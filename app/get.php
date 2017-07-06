@@ -1,13 +1,15 @@
 <?php
-use Symfony\Component\HttpFoundation\Response;
-//
+
 //$app->get('/', function () use ($app) {
-//    $articles = $app['dao.article']->findAll();
+//    $articles = $app['dao.infosContributeur']->findAll();
 //    ob_start();             // start buffering HTML output
 //    require '../views/view.php';
 //    $view = ob_get_clean(); // assign HTML output to $view
 //    return $view;
 //});
+
+// Home page
+
 
 $app->GET('/alicegabbana/circus/1.0.0/users/{id}/allfavoris', function () use ($app) {
 
@@ -50,12 +52,8 @@ $app->GET('/alicegabbana/circus/1.0.0/users/{id}', function(Application $app, Re
     return new Response('How about implementing getUsers as a GET method ?');
 });
 
-
-$app->GET('/alicegabbana/circus/1.0.0/userscoord', function(Application $app, Request $request) {
-
-
-    return new Response('How about implementing getUsersCoord as a GET method ?');
-});
+$app->get('/userscoord', "Models\Controller\ApiController::getAllUsers")
+    ->bind('home');
 
 
 $app->GET('/alicegabbana/circus/1.0.0/login', function(Application $app, Request $request) {

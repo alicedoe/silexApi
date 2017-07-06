@@ -1,0 +1,335 @@
+swagger: '2.0'
+info:
+  description: API UpCircus
+  version: 1.0.0
+  title: API designed for mobile app access
+  # put the contact info for your development or API team
+  contact:
+    email: you@your-company.com
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+# tags are used for organizing operations
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: developers
+  description: Operations available to regular developers
+- name: guests
+  description: Operations available to everyone
+- name: authenticated user
+  description: Operations available to authenticated user 
+
+paths:
+  /userscoord:
+    get:
+      tags:
+      - guests
+      summary: get the list of all users
+      operationId: getUsersCoord
+      description: 'List of every infos_contributeur in database with their coordinates to display the map on homepage'
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Array of every infos_contributeur object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/infosContributeur'
+        404:
+          description: No user in database
+  /contributions:
+    get:
+      tags:
+      - guests
+      summary: get the list of all contributions in database
+      operationId: getProducts
+      description: 'List of every contributions in database'
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Array of every contribution object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/contribution'
+        404:
+          description: No products in database
+  /users/{id}:
+    get:
+      tags:
+      - guests
+      summary: get the details of an user
+      operationId: getUsers
+      description: 'Details of one activated user using his ID'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: Array of every contribution object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/infosContributeur'
+        404:
+          description: No products in database
+  /users/{id}/contributionidee:
+    get:
+      tags:
+      - authenticated user
+      summary: get the contribution idee of an user
+      operationId: getUsersContribution
+      description: 'In the profil user, user can get a list his own contribution idee'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: Array of every contribution object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/contribution'
+        404:
+          description: No contribution in database for this user
+  /users/{id}/allfavoris:
+    get:
+      tags:
+      - authenticated user
+      summary: get the favoris of an user
+      operationId: getUsersAllFavoris
+      description: 'In the profil user, user can get a list of his own favoris'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: Array of favoris object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/favoris'
+        404:
+          description: No favoris in database for this user
+  /users/{id}/productfavoris:
+    get:
+      tags:
+      - authenticated user
+      summary: get the product favoris of an user
+      operationId: getUsersProductsFavoris
+      description: 'In the profil user, user can get a list of his own products favoris'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: Array of favoris object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/favoris'
+        404:
+          description: No products favoris in database for this user
+  /users/{id}/companyfavoris:
+    get:
+      tags:
+      - authenticated user
+      summary: get the company favoris of an user
+      operationId: getUsersCompanyFavoris
+      description: 'In the profil user, user can get a list of his own company favoris'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: Array of favoris object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/favoris'
+        404:
+          description: No company favoris in database for this user
+  /search/{word}:
+    get:
+      tags:
+      - guests
+      summary: search result
+      operationId: search
+      description: 'Get search results from dechets table when entering a word in the search box'
+      produces:
+      - application/json
+      parameters:
+      - name: "word"
+        in: "path"
+        description: "word to search"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: Array of search result object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/searchResult'
+        404:
+          description: No results in database
+  /login:
+    get:
+      tags:
+      - guests
+      summary: login
+      operationId: login
+      description: 'User login, guests become an authenticated user'
+      produces:
+      - application/json
+      parameters:
+      - name: "name"
+        in: "query"
+        description: "username of the user"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "password of the user"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: User login ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/infosContributeur'
+        404:
+          description: No results in database
+definitions:
+  infosContributeur:
+    type: object
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+      nom:
+        type: string
+      visible_name:
+        type: string
+      dixmots_paragraphe:
+        type: string
+      activite:
+        type: string
+      adresse:
+        type: string
+      ville:
+        type: string
+      cp:
+        type: number
+      id_user:
+        type: number
+      photo_logo:
+        type: string
+      actionvation:
+        type: string
+      dechets_reval:
+        type: string
+      paragraphe_info:
+        type: string
+      boutique:
+        type: string
+      telephone:
+        type: string
+      linkedin:
+        type: string
+      twitter:
+        type: string
+      facebook:
+        type: string
+      url:
+        type: string
+      photo_fond:
+        type: string
+      email:
+        type: string
+  contribution:
+    type: object
+    properties:
+      titre:
+        type: string
+      description_produit:
+        type: string
+      img_princ:
+        type: string
+      motcle:
+        type: string
+      categorie:
+        type: string
+      source:
+        type: string
+      id:
+        type: number
+      avendre:
+        type: number
+      reference:
+        type: number
+      prix:
+        type: number
+  favoris:
+    type: object
+    properties:
+      id_user:
+        type: number
+      id_product:
+        type: number
+      id_company:
+        type: number
+  searchResult:
+    type: object
+    properties:
+      id:
+        type: number
+      nom_dechets:
+        type: string
+# Added by API Auto Mocking Plugin
+schemes:
+ - https
+# Added by API Auto Mocking Plugin
+# host: "slimapi.my"
+# basePath: "/api"
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /alicegabbana/circus/1.0.0

@@ -52,19 +52,26 @@ $app->GET('/alicegabbana/circus/1.0.0/users/{id}', function(Application $app, Re
     return new Response('How about implementing getUsers as a GET method ?');
 });
 
-$app->get('/userscoord', "Models\Controller\ApiController::getAllUsers")
-    ->bind('home');
-
-
 $app->GET('/alicegabbana/circus/1.0.0/login', function(Application $app, Request $request) {
     $name = $request->get('name');    $password = $request->get('password');
 
     return new Response('How about implementing login as a GET method ?');
 });
 
+$app->get('/markermap', "Models\Controller\ApiController::getUserWithCoord");
 
-$app->GET('/alicegabbana/circus/1.0.0/search/{word}', function(Application $app, Request $request, $word) {
+$app->get('/search/{word}', "Models\Controller\ApiController::getDechetsSearch")->value('word', null );
 
+$app->get('/useractivated/{id}', "Models\Controller\ApiController::getUserActivated")->value('id', null);
 
-    return new Response('How about implementing search as a GET method ?');
-});
+$app->get('/user/{id}', "Models\Controller\ApiController::getUser")->value('id', null);
+
+$app->get('/user/{id}/allfavoris', "Models\Controller\ApiController::getUserFavourite")->value('id', null);
+
+$app->get('/user/{id}/companyfavoris', "Models\Controller\ApiController::getUserCompanyFavourite")->value('id', null);
+
+$app->get('/user/{id}/productfavoris', "Models\Controller\ApiController::getUserProductFavourite")->value('id', null);
+
+$app->get('/levenshtein/{word}', "Models\Controller\ApiController::getLevenshtein")->value('word', null);
+
+$app->get('/contribution', "Models\Controller\ApiController::getAllContribution");

@@ -13,6 +13,15 @@ ExceptionHandler::register();
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 
 // Register services.
-$app['dao.infosContributeur'] = function ($app) {
-    return new Models\DAO\InfosContributeurDAO($app['db']);
+$app['infosContributeur'] = function ($app) {
+    return new Models\Tables\InfosContributeur($app['db']);
+};
+$app['dechets'] = function ($app) {
+    return new Models\Tables\Dechets($app['db']);
+};
+$app['favourite'] = function ($app) {
+    return new Models\Tables\Favourite($app['db']);
+};
+$app['contribution'] = function ($app) {
+    return new Models\Tables\ContributionTable($app['db']);
 };

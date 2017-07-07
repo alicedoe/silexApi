@@ -35,4 +35,22 @@ class ContributionTable
         return $result;
     }
 
+    /**
+     * Récupère les idées contributions ajoutés par un utilisateur
+     *
+     * @param number $id
+     *
+     * @return array $result
+     */
+    function ideeFromContri($id)
+    {
+        $sql = "SELECT * FROM users WHERE id = $id";
+        $user = $this->db->fetchAll($sql);
+
+        $query = "SELECT * FROM contribution WHERE contributeur = '" . $user[0]['username'] . "' AND type = 'idee' ORDER BY id DESC";
+        $result = $this->db->fetchAll($query);
+
+        return $result;
+
+        }
 }

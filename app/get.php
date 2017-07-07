@@ -62,15 +62,17 @@ $app->get('/markermap', "Models\Controller\ApiController::getUserWithCoord");
 
 $app->get('/search/{word}', "Models\Controller\ApiController::getDechetsSearch")->value('word', null );
 
-$app->get('/useractivated/{id}', "Models\Controller\ApiController::getUserActivated")->value('id', null);
+$app->get('/user/{id}/contribution', "Models\Controller\ApiController::getIdeeFromContri")->value('id', null);
 
-$app->get('/user/{id}', "Models\Controller\ApiController::getUser")->value('id', null);
+$app->get('/useractivated/{id}', "Models\Controller\ApiController::getUserActivated")->value('id', null);
 
 $app->get('/user/{id}/allfavoris', "Models\Controller\ApiController::getUserFavourite")->value('id', null);
 
 $app->get('/user/{id}/companyfavoris', "Models\Controller\ApiController::getUserCompanyFavourite")->value('id', null);
 
 $app->get('/user/{id}/productfavoris', "Models\Controller\ApiController::getUserProductFavourite")->value('id', null);
+
+$app->get('/user/{id}', "Models\Controller\ApiController::getUser")->value('id', null);
 
 $app->get('/levenshtein/{word}', "Models\Controller\ApiController::getLevenshtein")->value('word', null);
 

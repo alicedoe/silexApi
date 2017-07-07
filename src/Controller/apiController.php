@@ -198,4 +198,29 @@ class ApiController {
         return $app->json($contrib);
     }
 
+    /**
+     * API articles controller.
+     *
+     * @param Application $app Silex application, int $id
+     *
+     * @return All contribution idée from the current user in JSON format
+     */
+    public function getIdeeFromContri($id,Application $app) {
+
+        if ($id=='') {
+            return $app->json('Missing required parameter: id', 400);
+        } elseif (!is_numeric($id)) {
+            return $app->json('Wrong type of parameter: id', 412);
+        } else {
+            $contrib = $app['contribution']->ideeFromContri($id);
+        }
+
+
+        if (count($contrib) == 0) {
+            return $app->json('No result', 404);
+        }
+
+        return $app->json($contrib);
+    }
+
 }

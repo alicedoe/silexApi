@@ -1,10 +1,10 @@
 <?php
 
-namespace Models\Tables;
+namespace Models\Classes;
 
 use Doctrine\DBAL\Connection;
 
-class ContributionTable
+class ContributionModel
 {
     /**
      * Database connection

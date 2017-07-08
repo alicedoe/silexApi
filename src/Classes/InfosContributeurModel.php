@@ -1,10 +1,10 @@
 <?php
 
-namespace Models\Tables;
+namespace Models\Classes;
 
 use Doctrine\DBAL\Connection;
 
-class InfosContributeur
+class InfosContributeurModel
 {
     /**
      * Database connection
@@ -71,7 +71,7 @@ class InfosContributeur
     }
 
 //    protected function buildDomainObject(array $row) {
-//        $infos_contributeur = new InfosContributeur();
+//        $infos_contributeur = new InfosContributeurModel();
 //        $infos_contributeur->setId($row['id']);
 //        $infos_contributeur->setIdUser($row['id_user']);
 //        $infos_contributeur->setNom($row['nom']);
@@ -100,7 +100,7 @@ class InfosContributeur
 //        return $infos_contributeur;
 //    }
 //
-//    function buildUsersArray(InfosContributeur $user) {
+//    function buildUsersArray(InfosContributeurModel $user) {
 //        $data  = array(
 //            'id'=>$user->getId(),
 //            'id_user'=>$user->getIdUser(),

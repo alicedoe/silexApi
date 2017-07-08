@@ -7,5 +7,6 @@ $app = new Silex\Application();
 require __DIR__.'/../app/config/dev.php';
 require __DIR__.'/../app/app.php';
 require __DIR__.'/../app/get.php';
+require __DIR__.'/../app/post.php';
 
 $app->run();

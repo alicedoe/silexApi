@@ -1,10 +1,10 @@
 <?php
 
-namespace Models\Tables;
+namespace Models\Classes;
 
 use Doctrine\DBAL\Connection;
 
-class Favourite
+class FavouriteModel
 {
     /**
      * Database connection

@@ -8,5 +8,10 @@ $app['db.options'] = array(
     'port'     => '3306',
     'dbname'   => 'circus',
     'user'     => 'root',
-    'password' => '',
+    'password' => 'root',
+);
+
+$app['api'] = array(
+    'key'   => 'GYqF5VMiwCcplnlO3JWnU4NHcoX9ZmBk',
+    'iss'   => 'http://www.apisilex.my'
 );

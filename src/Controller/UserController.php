@@ -33,19 +33,44 @@ class UserController
         if (!$body['password']) {
             return $app->json('Missing required parameter: password', 400);
         }
-//        $user['pseudo'] = filter_input(INPUT_GET, $request->request->get('pseudo'), FILTER_SANITIZE_STRING);
-//        $user['email'] = filter_input(INPUT_GET, $request->request->get('email'), FILTER_SANITIZE_STRING);
-//        $user['password'] = filter_input(INPUT_GET, $request->request->get('password'), FILTER_SANITIZE_STRING);
+        $user['pseudo'] = htmlentities(filter_var ($body['pseudo'], FILTER_SANITIZE_STRING));
+        $user['email'] = htmlentities(filter_var($body['email'], FILTER_SANITIZE_STRING));
+        $user['password'] = htmlentities(filter_var($body['password'], FILTER_SANITIZE_STRING));
+
+        if (!$this->numberLetterUnderscore($user['pseudo'])) {
+            return $app->json('Only letter & number for: pseudo', 400);
+        }
+        if (!$this->numberLetter($user['password'])) {
+            return $app->json('Only letter & number for: password', 400);
+        }
 
             if ($app['users']->emailExist($body['email'])) {
                 return $app->json('Email already registered', 400);
-            } elseif ($app['users']->pseudoExist($body['pseudo'])) {
+            } elseif ($app['users']->pseudoExist($user['pseudo'])) {
                 return $app->json('Pseudo already registered', 400);
             } else {
                 $user = $app['users']->createUser($body);
             }
 
         return $app->json($user, 201);  // 201 = Created
+    }
+
+    /**
+     * API check format of a string : only letter & number.
+     *
+     * @param $string
+     *
+     * @return boolean
+     */
+    public function numberLetterUnderscore($string)
+    {
+        if (preg_match('#^[a-z0-9_]+$#', $string)) {
+            return true;
+        } else {
+            return false;
+        }
+
+
     }
 
     /**
@@ -70,12 +95,13 @@ class UserController
         if (!$body['password']) {
             return $app->json('Missing required parameter: password', 400);
         }
-//        $user['pseudo'] = filter_input(INPUT_GET, $request->request->get('pseudo'), FILTER_SANITIZE_STRING);
-//        $user['email'] = filter_input(INPUT_GET, $request->request->get('email'), FILTER_SANITIZE_STRING);
-//        $user['password'] = filter_input(INPUT_GET, $request->request->get('password'), FILTER_SANITIZE_STRING);
 
-        $user['email'] = $body['email'];
-        $user['password'] = $body['password'];
+        $user['email'] = htmlentities(filter_var($body['email'], FILTER_SANITIZE_STRING));
+        $user['password'] = htmlentities(filter_var($body['password'], FILTER_SANITIZE_STRING));
+
+        if (!$this->numberLetter($user['password'])) {
+            return $app->json('Only letter & number for: password', 400);
+        }
 
         if (!$app['users']->emailExist($user['email'])) {
             return $app->json('Email is not registered', 400);

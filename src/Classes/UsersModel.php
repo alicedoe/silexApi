@@ -167,8 +167,6 @@ class UsersModel
 
     }
 
-
-
     function encodeJwt($username, Application $app) {
         $key = $app['api']['key'];
         $token = array(

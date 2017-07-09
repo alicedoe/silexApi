@@ -3,23 +3,23 @@
 namespace Models\Classes;
 
 use Doctrine\DBAL\Connection;
+use \PDO;
 
 class DechetsModel
 {
-    /**
-     * Database connection
-     *
-     * @var \Doctrine\DBAL\Connection
-     */
-    private $db;
+    private $pdo;
 
-    /**
-     * Constructor
-     *
-     * @param \Doctrine\DBAL\Connection The database connection object
-     */
-    public function __construct(Connection $db) {
-        $this->db = $db;
+    public function __construct(Connection $db)
+    {
+
+        try
+        {
+            $this->pdo = new PDO('mysql:host=localhost;dbname=circus;charset=utf8', 'root', 'root');
+        }
+        catch(Exception $e)
+        {
+            die('Erreur : '.$e->getMessage());
+        }
     }
 
     /**
@@ -33,16 +33,23 @@ class DechetsModel
     {
         $dechets=[];
 
-        $sql = "SELECT * FROM dechets WHERE nom_dechets LIKE '$word%' OR dechetassocie LIKE '$word%' OR recherche_associee LIKE '$word%'";
-        $results = $this->db->fetchAll($sql);
+        $sql = $this->pdo->prepare("SELECT * FROM dechets WHERE nom_dechets LIKE :word OR dechetassocie LIKE :word OR recherche_associee LIKE :word");
+        $sql->bindValue(":word", $word.'%', PDO::PARAM_INT);
+        $sql->execute();
+        $results = $sql->fetchAll();
 
         foreach ($results as $result) {
-            $sql = "SELECT * FROM contribution WHERE dechet LIKE '".$result['nom_dechets']."'";
-            $contributions = $this->db->fetchAll($sql);
+            $sql = $this->pdo->prepare("SELECT * FROM contribution WHERE dechet LIKE :dechet.'%'");
+            $sql->bindValue(":dechet", $result['nom_dechets'], PDO::PARAM_INT);
+            $sql->execute();
+            $contributions = $sql->fetchAll();
             foreach ($contributions as $contribution) {
                 array_push($dechets, $contribution);
             }
         }
+
+        $sql->closeCursor();
+        $sql = NULL;
         return $dechets;
     }
 
@@ -55,9 +62,9 @@ class DechetsModel
      */
     function levenshtein($word)
     {
-
-        $sql = "SELECT * FROM dechets";
-        $resultsDechet = $this->db->fetchAll($sql);
+        $sql = $this->pdo->prepare("SELECT * FROM dechets");
+        $sql->execute();
+        $resultsDechet = $sql->fetchAll();
 
         for ($i = 1; $i <= count($resultsDechet)-1; $i++) {
             $test = $this->accentMinus($resultsDechet[$i]['dechetassocie']);
@@ -74,8 +81,10 @@ class DechetsModel
 
         }
 
-        $sql = "SELECT * FROM contribution WHERE dechet = '$resultDechet[1]'";
-        $queryDechets = $this->db->fetchAll($sql);
+        $sql = $this->pdo->prepare("SELECT * FROM contribution WHERE dechet =:dechet");
+        $sql->bindValue(":dechet", $resultDechet[1], PDO::PARAM_INT);
+        $sql->execute();
+        $queryDechets = $sql->fetchAll();
 
         $results["dechets_levenshtein"] = $queryDechets;
 
@@ -95,8 +104,9 @@ class DechetsModel
 
         $results["contribution_levenshtein"] = $resultContrib;
 
-        $sql = "SELECT * FROM infos_contributeur";
-        $resultsInfosContrib = $this->db->fetchAll($sql);
+        $sql = $this->pdo->prepare("SELECT * FROM infos_contributeur");
+        $sql->execute();
+        $resultsInfosContrib = $sql->fetchAll();
 
         for ($i = 1; $i <= count($resultsInfosContrib)-1; $i++) {
             $test = $this->accentMinus($resultsInfosContrib[$i]['visible_name']);
@@ -115,6 +125,8 @@ class DechetsModel
 
         $results["infos_contributeur_levenshtein"] = $resultInfosContrib;
 
+        $sql->closeCursor();
+        $sql = NULL;
         return array($results);
     }
 

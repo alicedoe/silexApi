@@ -46,6 +46,29 @@ class UsersModel
     }
 
     /**
+     * check if id exists
+     *
+     * @param int $id
+     * @return boolean
+     */
+    function idExist($id)
+    {
+
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id=:id");
+        $stmt->bindValue(":id", $id, PDO::PARAM_STR);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+        $stmt->closeCursor();
+        $stmt = NULL;
+
+        if (count($rows) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * check if pseudo exists
      *
      * @param pseudo
@@ -173,6 +196,31 @@ class UsersModel
         $decoded = JWT::decode($token, $key, array('HS256'));
 
         return $decoded;
+    }
+
+    /**
+     * Vérifie si le token envoyé autorise l'accès aux données de l'user id
+     *
+     * @param string $token
+     * @param string $id
+     *
+     * @return boolean
+     */
+    function idTokenOk($token,$id)
+    {
+        $sql = $this->pdo->prepare("SELECT * FROM circus_api_token WHERE users_id =:id");
+        $sql->bindValue(":id", $id, PDO::PARAM_STR);
+        $sql->execute();
+        $rows = $sql->fetchAll();
+        $sql->closeCursor();
+        $sql = NULL;
+
+        if (count($rows)==0 || $rows[0]['token'] != $token) {
+            return false;
+        } elseif ($rows[0]['token'] == $token)  {
+            return true;
+        }
+
     }
 
 }

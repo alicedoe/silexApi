@@ -3,23 +3,23 @@
 namespace Models\Classes;
 
 use Doctrine\DBAL\Connection;
+use \PDO;
 
 class FavouriteModel
 {
-    /**
-     * Database connection
-     *
-     * @var \Doctrine\DBAL\Connection
-     */
-    private $db;
+    private $pdo;
 
-    /**
-     * Constructor
-     *
-     * @param \Doctrine\DBAL\Connection The database connection object
-     */
-    public function __construct(Connection $db) {
-        $this->db = $db;
+    public function __construct(Connection $db)
+    {
+
+        try
+        {
+            $this->pdo = new PDO('mysql:host=localhost;dbname=circus;charset=utf8', 'root', 'root');
+        }
+        catch(Exception $e)
+        {
+            die('Erreur : '.$e->getMessage());
+        }
     }
 
     /**
@@ -28,9 +28,13 @@ class FavouriteModel
      * @return array A list of favourite.
      */
     public function getAll($id) {
-        $sql = "select * from favourite where id_user=$id";
-        $result = $this->db->fetchAll($sql);
-        return $result;
+        $sql = $this->pdo->prepare("SELECT * FROM favourite WHERE id_user=:id");
+        $sql->bindValue(":id", $id, PDO::PARAM_INT);
+        $sql->execute();
+        $rows = $sql->fetchAll();
+        $sql->closeCursor();
+        $sql = NULL;
+        return $rows;
     }
 
     /**
@@ -39,9 +43,13 @@ class FavouriteModel
      * @return array A list of favourite.
      */
     public function getCompanyFavourite($id) {
-        $sql = "select * from favourite where id_user=$id and id_company!= 0";
-        $result = $this->db->fetchAll($sql);
-        return $result;
+        $sql = $this->pdo->prepare("SELECT * FROM favourite WHERE id_user=:id and id_company!= 0");
+        $sql->bindValue(":id", $id, PDO::PARAM_INT);
+        $sql->execute();
+        $rows = $sql->fetchAll();
+        $sql->closeCursor();
+        $sql = NULL;
+        return $rows;
     }
 
     /**
@@ -50,9 +58,13 @@ class FavouriteModel
      * @return array A list of favourite.
      */
     public function getProductFavourite($id) {
-        $sql = "select * from favourite where id_user=$id and id_produits!= 0";
-        $result = $this->db->fetchAll($sql);
-        return $result;
+        $sql = $this->pdo->prepare("SELECT * FROM favourite WHERE id_user=:id and id_produits!= 0");
+        $sql->bindValue(":id", $id, PDO::PARAM_INT);
+        $sql->execute();
+        $rows = $sql->fetchAll();
+        $sql->closeCursor();
+        $sql = NULL;
+        return $rows;
     }
 
 }

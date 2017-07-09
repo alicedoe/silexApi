@@ -3,6 +3,7 @@
 namespace Models\Classes;
 
 use Doctrine\DBAL\Connection;
+use \PDO;
 
 class InfosContributeurModel
 {

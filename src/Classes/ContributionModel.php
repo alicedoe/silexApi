@@ -7,22 +7,11 @@ use \PDO;
 
 class ContributionModel
 {
-    /**
-     * Database connection
-     *
-     * @var \Doctrine\DBAL\Connection
-     */
-    private $db;
+
     private $pdo;
 
-    /**
-     * Constructor
-     *
-     * @param \Doctrine\DBAL\Connection The database connection object
-     */
     public function __construct(Connection $db)
     {
-        $this->db = $db;
 
         try
         {
@@ -40,10 +29,14 @@ class ContributionModel
      * @return array A list of all contributions.
      */
     public function getAll() {
-        $sql = "select * from contribution";
-        $result = $this->db->fetchAll($sql);
 
-        return $result;
+        $sql = $this->pdo->prepare("SELECT * FROM contribution");
+        $sql->execute();
+        $rows = $sql->fetchAll();
+        $sql->closeCursor();
+        $sql = NULL;
+
+        return $rows;
     }
 
     /**
@@ -55,12 +48,18 @@ class ContributionModel
      */
     function ideeFromContri($id)
     {
-        $sql = "SELECT * FROM users WHERE id = $id";
-        $user = $this->db->fetchAll($sql);
+        $sql = $this->pdo->prepare("SELECT * FROM users WHERE id =:id");
+        $sql->bindValue(":id", $id, PDO::PARAM_INT);
+        $sql->execute();
+        $user = $sql->fetchAll();
 
-        $query = "SELECT * FROM contribution WHERE contributeur = '" . $user[0]['username'] . "' AND type = 'idee' ORDER BY id DESC";
-        $result = $this->db->fetchAll($query);
+        $sql = $this->pdo->prepare("SELECT * FROM contribution WHERE contributeur =:name AND type = 'idee' ORDER BY id DESC");
+        $sql->bindValue(":name", $user[0]['username'], PDO::PARAM_INT);
+        $sql->execute();
+        $result = $sql->fetchAll();
 
+        $sql->closeCursor();
+        $sql = NULL;
         return $result;
 
     }
@@ -74,35 +73,41 @@ class ContributionModel
      */
     function contributionCategorie($categorie)
     {
-        $sql = "SELECT * FROM contribution WHERE categorie = '".$categorie."'";
-        $contrib = $this->db->fetchAll($sql);
+        $sql = $this->pdo->prepare("SELECT * FROM contribution WHERE categorie =:categorie");
+        $sql->bindValue(":categorie", $categorie, PDO::PARAM_STR);
+        $sql->execute();
+        $contribution = $sql->fetchAll();
+        $sql->closeCursor();
+        $sql = NULL;
 
-        return $contrib;
+        return $contribution;
 
     }
 
     /**
-     * Vérifie si le token envoyé autorise l'accès aux données de l'user id
+     * Récupère les contributions idee from the current user with reference $ref in JSON format
      *
-     * @param string $token
-     * @param string $id
+     * @param string $ref
+     * @param number $id
      *
-     * @return boolean
+     * @return array $result
      */
-    function contributionTokenOk($token,$id)
+    function IdeeContriRef($ref,$id)
     {
-        $sql = $this->pdo->prepare("SELECT * FROM circus_api_token WHERE users_id =:id");
+        $sql = $this->pdo->prepare("SELECT * FROM users WHERE id =:id");
         $sql->bindValue(":id", $id, PDO::PARAM_STR);
         $sql->execute();
-        $rows = $sql->fetchAll();
+        $users = $sql->fetchAll();
+
+        $sql = $this->pdo->prepare("SELECT * FROM contribution WHERE contributeur =:contributeur AND type = 'idee' AND reference =:ref");
+        $sql->bindValue(":contributeur", $users[0]['username'], PDO::PARAM_STR);
+        $sql->bindValue(":ref", $ref, PDO::PARAM_STR);
+        $sql->execute();
+        $result = $sql->fetchAll();
         $sql->closeCursor();
         $sql = NULL;
 
-        if ($rows[0]['token'] == $token) {
-            return true;
-        } else {
-            return false;
-        }
+        return $result;
 
     }
 }

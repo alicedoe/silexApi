@@ -108,10 +108,12 @@ class GetController {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
             return $app->json('Wrong type of parameter: id', 400);
-        } elseif ( $app['contribution']->contributionTokenOk($token,$id) ) {
+        } elseif ( $app['users']->idExist($id)) {
+            if ($app['users']->idTokenOk($token,$id)) {
             $users = $app['favourite']->getAll($id);
-        } else {
-            return $app->json('Wronk token', 401);
+            } else {
+                return $app->json('Wronk token', 400);
+            }
         }
 
         if (count($users) == 0) {
@@ -136,10 +138,12 @@ class GetController {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
             return $app->json('Wrong type of parameter: id', 400);
-        } elseif ( $app['contribution']->contributionTokenOk($token,$id) ) {
+        } elseif ( $app['users']->idExist($id)) {
+            if ($app['users']->idTokenOk($token,$id)) {
             $users = $app['favourite']->getCompanyFavourite($id);
-        } else {
-            return $app->json('Wronk token', 401);
+            } else {
+                return $app->json('Wronk token', 400);
+            }
         }
 
         if (count($users) == 0) {
@@ -164,10 +168,12 @@ class GetController {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
             return $app->json('Wrong type of parameter: id', 400);
-        } elseif ( $app['contribution']->contributionTokenOk($token,$id) ) {
+        } elseif ( $app['users']->idExist($id)) {
+            if ($app['users']->idTokenOk($token,$id)) {
             $users = $app['favourite']->getProductFavourite($id);
-        } else {
-            return $app->json('Wronk token', 401);
+            } else {
+                return $app->json('Wronk token', 400);
+            }
         }
 
         if (count($users) == 0) {
@@ -235,10 +241,12 @@ class GetController {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
             return $app->json('Only number for: id', 400);
-        } elseif ( $app['contribution']->contributionTokenOk($token,$id) ) {
-            $contrib = $app['contribution']->ideeFromContri($id);
-        } else {
-            return $app->json('Wronk token', 401);
+        } elseif ( $app['users']->idExist($id)) {
+            if ($app['users']->idTokenOk($token,$id)) {
+                $contrib = $app['contribution']->ideeFromContri($id);
+            } else {
+                return $app->json('Wronk token', 400);
+            }
         }
 
 
@@ -247,6 +255,36 @@ class GetController {
         }
 
         return $app->json($contrib);
+    }
+
+    /**
+     * TODO : swagger
+     *
+     * @param Application $app Silex application
+     * @param Request $request
+     * @param $ref
+     * @param $name
+     *
+     * @return Contribution idee from the current user with reference $ref in JSON format
+     */
+    public function getIdeeContriRef($id,$ref,Request $request, Application $app) {
+
+        $token = $request->headers->get('token');
+
+        if ($id=='') {
+            return $app->json('Missing required parameter: id', 400);
+        } if ($ref=='') {
+            return $app->json('Missing required parameter: ref', 400);
+        } elseif (!is_numeric($id)) {
+            return $app->json('Only number for: id', 400);
+        } elseif ( $app['users']->idExist($id)) {
+            if ($app['users']->idTokenOk($token,$id)) {
+            $contrib = $app['contribution']->IdeeContriRef($ref,$id);
+            } else {
+                return $app->json('Wronk token', 400);
+            }
+        }
+
     }
 
     /**

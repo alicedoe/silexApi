@@ -47,9 +47,6 @@ $app->GET('/alicegabbana/circus/1.0.0/login', function(Application $app, Request
     return new Response('How about implementing login as a GET method ?');
 });
 
-$app->get('/encode/{username}', "Models\Controller\User::encodeJwt");
-$app->get('/decode', "Models\Controller\User::decodeJwt");
-
 $app->get('/markermap', "Models\Controller\GetController::getUserWithCoord");
 
 $app->get('/search/{word}', "Models\Controller\GetController::getDechetsSearch")->value('word', null );
@@ -68,6 +65,6 @@ $app->get('/user/{id}', "Models\Controller\GetController::getUser")->value('id',
 
 $app->get('/levenshtein/{word}', "Models\Controller\GetController::getLevenshtein")->value('word', null);
 
-$app->get('/contribution', "Models\Controller\GetController::getAllContribution");
+$app->get('/contribution/{categorie}', "Models\Controller\GetController::getContributionCategorie")->value('categorie', null);
 
 $app->get('/geocodage', "Models\Controller\GetController::getGeocodage");

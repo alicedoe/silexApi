@@ -9,18 +9,8 @@ use \Firebase\JWT\JWT;
 class UsersModel
 {
 
-    /**
-     * Database connection
-     *
-     * @var \Doctrine\DBAL\Connection
-     */
     private $pdo;
 
-    /**
-     * Constructor
-     *
-     * @param \Doctrine\DBAL\Connection The database connection object
-     */
     public function __construct() {
         try
         {

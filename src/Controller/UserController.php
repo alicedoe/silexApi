@@ -40,7 +40,7 @@ class UserController
         if (!$this->numberLetterUnderscore($user['pseudo'])) {
             return $app->json('Only letter & number for: pseudo', 400);
         }
-        if (!$this->numberLetter($user['password'])) {
+        if (!$this->numberLetterUnderscore($user['password'])) {
             return $app->json('Only letter & number for: password', 400);
         }
 

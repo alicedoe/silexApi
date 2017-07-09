@@ -77,23 +77,23 @@ class DechetsModel
         $sql = "SELECT * FROM contribution WHERE dechet = '$resultDechet[1]'";
         $queryDechets = $this->db->fetchAll($sql);
 
-        $results["dechets"] = $queryDechets;
+        $results["dechets_levenshtein"] = $queryDechets;
 
         $sql = "SELECT * FROM contribution";
         $resultsContrib = $this->db->fetchAll($sql);
 
         for ($i = 1; $i <= count($resultsContrib)-1; $i++) {
             $test = $this->accentMinus($resultsContrib[$i]['dechet']);
-            if ($i == 1 || levenshtein($word, $test) < $resultContrib[2]) {
-                $resultContrib[0] = $resultsContrib[$i]['id'];
-                $resultContrib[1] = $resultsContrib[$i]['titre'];
-                $resultContrib[2] = levenshtein($word, $test);
+            if ($i == 1 || levenshtein($word, $test) < $resultContrib["note_levenshtein"]) {
+                $resultContrib["id"] = $resultsContrib[$i]['id'];
+                $resultContrib["titre"] = $resultsContrib[$i]['titre'];
+                $resultContrib["note_levenshtein"] = levenshtein($word, $test);
 
             }
 
         }
 
-        $results["contribution"] = $resultContrib;
+        $results["contribution_levenshtein"] = $resultContrib;
 
         $sql = "SELECT * FROM infos_contributeur";
         $resultsInfosContrib = $this->db->fetchAll($sql);
@@ -105,15 +105,15 @@ class DechetsModel
             $leven1 = levenshtein($word, $test);
             $leven2 = levenshtein($word, $test2);
             $leven3 = levenshtein($word, $test3);
-            if ($i == 1 || levenshtein($word, $test) < $resultInfosContrib[2] || levenshtein($word, $test2) < $resultInfosContrib[2] || levenshtein($word, $test3) < $resultInfosContrib[2]) {
-                $resultInfosContrib[0] = $resultsInfosContrib[$i]['id'];
-                $resultInfosContrib[1] = $resultsInfosContrib[$i]['nom'];
-                $resultInfosContrib[2] = min($leven1, $leven2, $leven3);
+            if ($i == 1 || levenshtein($word, $test) < $resultInfosContrib["note_levenshtein"] || levenshtein($word, $test2) < $resultInfosContrib["note_levenshtein"] || levenshtein($word, $test3) < $resultInfosContrib["note_levenshtein"]) {
+                $resultInfosContrib["id"] = $resultsInfosContrib[$i]['id'];
+                $resultInfosContrib["nom"] = $resultsInfosContrib[$i]['nom'];
+                $resultInfosContrib["note_levenshtein"] = min($leven1, $leven2, $leven3);
             }
 
         }
 
-        $results["infos_contributeur"] = $resultInfosContrib;
+        $results["infos_contributeur_levenshtein"] = $resultInfosContrib;
 
         return array($results);
     }

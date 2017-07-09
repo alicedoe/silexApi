@@ -22,7 +22,7 @@ $app['favourite'] = function ($app) {
     return new Models\Classes\FavouriteModel($app['db']);
 };
 $app['contribution'] = function ($app) {
-    return new Models\Classes\ContributionTableModel($app['db']);
+    return new Models\Classes\ContributionModel($app['db']);
 };
 $app['users'] = function () {
     return new Models\Classes\UsersModel();

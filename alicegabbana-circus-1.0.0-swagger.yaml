@@ -15,57 +15,93 @@ info:
 tags:
 - name: admins
   description: Secured Admin-only calls
-- name: developers
-  description: Operations available to regular developers
 - name: guests
   description: Operations available to everyone
 - name: authenticated user
-  description: Operations available to authenticated user 
+  description: Operations available to owner of the account 
 
 paths:
+# Operations available to everyone
+  /users:
+    post:
+      tags:
+      - guests
+      summary: create a new account
+      operationId: postUser
+      description: 'create a new user account with pseudo / mail / psssword'
+      produces:
+      - application/json
+      parameters:
+      - name: "user credits"
+        in: body
+        description: email & password used to login
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/newuser'
+      responses:
+        200:
+          description: Array of user object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/newusercreated'
+        400:
+          description: 'Missing or invalid parameter'
+        404:
+          description: 'No user with this id'
   /userscoord:
     get:
       tags:
       - guests
-      summary: get the list of all users
-      operationId: getUsersCoord
-      description: 'List of every infos_contributeur in database with their coordinates to display the map on homepage'
+      summary: get the list of users with coordinates
+      operationId: getUserWithCoord
+      description: 'List of every infos_contributeur with coordinates in database with their coordinates to display the map on homepage'
       produces:
       - application/json
       responses:
         200:
-          description: Array of every infos_contributeur object
+          description: Array of infos_contributeur object
           schema:
             type: array
             items:
               $ref: '#/definitions/infosContributeur'
         404:
-          description: No user in database
-  /contributions:
+          description: 'No user in database with coordinates'
+  /contribution/{categorie}:
     get:
       tags:
       - guests
-      summary: get the list of all contributions in database
-      operationId: getProducts
-      description: 'List of every contributions in database'
+      summary: get the list of contributions
+      operationId: getContributionCategorie
+      description: 'List of every contributions in database where categorie = {categorie}'
       produces:
       - application/json
+      parameters:
+      - name: "categorie"
+        in: "path"
+        description: "Categorie from contribution"
+        required: true
+        type: "string"
       responses:
         200:
-          description: Array of every contribution object
+          description: Array of contribution object
           schema:
             type: array
             items:
               $ref: '#/definitions/contribution'
+        400:
+          description : 'Missing required parameter: categorie'
         404:
-          description: No products in database
+          description: 'No products in database'
   /users/{id}:
     get:
       tags:
       - guests
-      summary: get the details of an user
-      operationId: getUsers
-      description: 'Details of one activated user using his ID'
+      summary: get the infosContributeur details related to an user id
+      operationId: getUser
+      description: 'InfosContributeur of one activated user using his ID'
       produces:
       - application/json
       parameters:
@@ -77,20 +113,22 @@ paths:
         format: "int64"
       responses:
         200:
-          description: Array of every contribution object
+          description: Array of user object
           schema:
             type: array
             items:
               $ref: '#/definitions/infosContributeur'
+        400:
+          description: 'Missing or invalid parameter'
         404:
-          description: No products in database
-  /users/{id}/contributionidee:
+          description: 'No user with this id'
+  /useractivated/{id}:
     get:
       tags:
-      - authenticated user
-      summary: get the contribution idee of an user
-      operationId: getUsersContribution
-      description: 'In the profil user, user can get a list his own contribution idee'
+      - guests
+      summary: get user info from an user id
+      operationId: getUserActivated
+      description: 'get the infos contributeur from a specific user id activated'
       produces:
       - application/json
       parameters:
@@ -102,94 +140,21 @@ paths:
         format: "int64"
       responses:
         200:
-          description: Array of every contribution object
+          description: Array of infosContributeur
           schema:
             type: array
             items:
-              $ref: '#/definitions/contribution'
+              $ref: '#/definitions/infosContributeur'
+        400:
+          description: 'Missing or invalid parameter'
         404:
-          description: No contribution in database for this user
-  /users/{id}/allfavoris:
-    get:
-      tags:
-      - authenticated user
-      summary: get the favoris of an user
-      operationId: getUsersAllFavoris
-      description: 'In the profil user, user can get a list of his own favoris'
-      produces:
-      - application/json
-      parameters:
-      - name: "id"
-        in: "path"
-        description: "ID of user"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: Array of favoris object
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/favoris'
-        404:
-          description: No favoris in database for this user
-  /users/{id}/productfavoris:
-    get:
-      tags:
-      - authenticated user
-      summary: get the product favoris of an user
-      operationId: getUsersProductsFavoris
-      description: 'In the profil user, user can get a list of his own products favoris'
-      produces:
-      - application/json
-      parameters:
-      - name: "id"
-        in: "path"
-        description: "ID of user"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: Array of favoris object
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/favoris'
-        404:
-          description: No products favoris in database for this user
-  /users/{id}/companyfavoris:
-    get:
-      tags:
-      - authenticated user
-      summary: get the company favoris of an user
-      operationId: getUsersCompanyFavoris
-      description: 'In the profil user, user can get a list of his own company favoris'
-      produces:
-      - application/json
-      parameters:
-      - name: "id"
-        in: "path"
-        description: "ID of user"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: Array of favoris object
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/favoris'
-        404:
-          description: No company favoris in database for this user
+          description: 'No company favoris in database for this user'
   /search/{word}:
     get:
       tags:
       - guests
       summary: search result
-      operationId: search
+      operationId: getDechetsSearch
       description: 'Get search results from dechets table when entering a word in the search box'
       produces:
       - application/json
@@ -206,8 +171,36 @@ paths:
             type: array
             items:
               $ref: '#/definitions/searchResult'
+        400:
+          description: 'Missing or invalid parameter'
         404:
-          description: No results in database
+          description: 'No results in database'
+  /levenshtein/{word}:
+    get:
+      tags:
+      - guests
+      summary: search result
+      operationId: getLevenshtein
+      description: 'Get search results using levenshtein from dechet / contribution / infos_contributeur'
+      produces:
+      - application/json
+      parameters:
+      - name: "word"
+        in: "path"
+        description: "word to search"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: Array of dechet, contribution, infos_contributeur object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/levenshtein'
+        400:
+          description: 'Missing or invalid parameter'
+        404:
+          description: 'No results in database'
   /login:
     get:
       tags:
@@ -218,16 +211,14 @@ paths:
       produces:
       - application/json
       parameters:
-      - name: "name"
-        in: "query"
-        description: "username of the user"
+      - name: "user credits"
+        in: body
+        description: email & password used to login
         required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "password of the user"
-        required: true
-        type: "string"
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/userslogin'
       responses:
         200:
           description: User login ok
@@ -235,8 +226,149 @@ paths:
             type: array
             items:
               $ref: '#/definitions/infosContributeur'
+        400:
+          description: 'Missing or invalid parameter'
+# Operations available to owner of the account
+  /users/{id}/contributionidee:
+    get:
+      tags:
+      - authenticated user
+      summary: get the contribution idee of an user
+      operationId: getIdeeFromContri
+      description: 'In the profil user, user can get a list his own contribution idee'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "token"
+        in: body
+        description: token
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/token'
+      responses:
+        200:
+          description: Array of every contribution object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/contribution'
+        400:
+          description: 'Missing or invalid parameter'
         404:
-          description: No results in database
+          description: 'No contribution in database for this user'
+  /users/{id}/allfavoris:
+    get:
+      tags:
+      - authenticated user
+      summary: get the favoris of an user
+      operationId: getUserFavourite
+      description: 'In the profil user, user can get a list of his own favoris'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "token"
+        in: body
+        description: token
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/token'
+      responses:
+        200:
+          description: Array of favoris object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/favoris'
+        400:
+          description: 'Missing or invalid parameter'
+        404:
+          description: 'No favoris in database for this user'
+  /users/{id}/productfavoris:
+    get:
+      tags:
+      - authenticated user
+      summary: get the product favoris of an user
+      operationId: getUserProductFavourite
+      description: 'In the profil user, user can get a list of his own products favoris'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "token"
+        in: body
+        description: token
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/token'
+      responses:
+        200:
+          description: Array of favoris object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/favoris'
+        400:
+          description: 'Missing or invalid parameter'
+        404:
+          description: 'No products favoris in database for this user'
+  /users/{id}/companyfavoris:
+    get:
+      tags:
+      - authenticated user
+      summary: get the company favoris of an user
+      operationId: getUsersCompanyFavoris
+      description: 'In the profil user, user can get a list of his own company favoris'
+      produces:
+      - application/json
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of user"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "token"
+        in: body
+        description: token
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/token'
+      responses:
+        200:
+          description: Array of favoris object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/favoris'
+        400:
+          description: 'Missing or invalid parameter'
+        404:
+          description: 'No company favoris in database for this user'
 definitions:
   infosContributeur:
     type: object
@@ -317,6 +449,95 @@ definitions:
         type: number
       id_company:
         type: number
+  token:
+    type: object
+    properties:
+      token:
+        type: string
+  levenshtein:
+    type: object
+    properties:
+      dechets_levenshtein:
+        type: object
+        properties:
+          id:
+            type: number
+          titre:
+            type: string
+          description_produit:
+            type: string
+          type:
+            type: string
+          dechet:
+            type: string
+          cat_associe:
+            type: string
+          img_princ:
+            type: string
+          difficulte:
+            type: number
+          intro:
+            type: string
+          materiel:
+            type: string
+          img_matos:
+            type: string
+          titre_etape:
+            type: string
+          img_etape:
+            type: string
+          tutoriel_etape:
+            type: string
+          video_etape:
+            type: string
+          fictech_etape:
+            type: string
+          categorie:
+            type: string
+          motcle:
+            type: string
+          source:
+            type: string
+          contributeur:
+            type: string
+          nb_note:
+            type: number
+          nb_coupcoeur:
+            type: number
+          note:
+            type: number
+          date:
+            type: number
+          publication:
+            type: string
+          valide:
+            type: string
+          nb_etapes:
+            type: number
+          avendre:
+            type: number
+          prodassid:
+            type: number
+          id_company:
+            type: number
+      contribution_levenshtein:
+        type: object
+        properties:
+          id:
+            type: number
+          titre:
+            type: string
+          note_levenshtein:
+            type: number
+      infos_contributeur_levenshtein:
+        type: object
+        properties:
+          id:
+            type: number
+          nom:
+            type: string
+          note_levenshtein:
+            type: number
   searchResult:
     type: object
     properties:
@@ -324,12 +545,38 @@ definitions:
         type: number
       nom_dechets:
         type: string
+  userslogin:
+        type: object
+        properties:
+          email:
+            type: string
+          password:
+            type: string
+  newuser:
+        type: object
+        properties:
+          email:
+            type: string
+          pseudo:
+            type: string
+          password:
+            type: string
+  newusercreated:
+        type: object
+        properties:
+          id:
+            type: number
+          pseudo:
+            type: string
 # Added by API Auto Mocking Plugin
-schemes:
- - https
-# Added by API Auto Mocking Plugin
-# host: "slimapi.my"
-# basePath: "/api"
+# schemes:
+#  - http
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
 basePath: /alicegabbana/circus/1.0.0
+# Added by API Auto Mocking Plugin
+# schemes:
+#  - http
+# Added by API Auto Mocking Plugin
+schemes:
+ - https

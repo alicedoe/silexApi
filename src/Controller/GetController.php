@@ -3,11 +3,12 @@
 namespace Models\Controller;
 
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 class GetController {
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
      * @param Application $app Silex application
      *
@@ -17,14 +18,14 @@ class GetController {
         $users = $app['infosContributeur']->userWithCoord();
 
         if (count($users) == 0) {
-            return $app->json('No result', 404);
+            return $app->json('No user in database with coordinates', 404);
         }
 
         return $app->json($users);
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
      * @param Application $app Silex application, string $word to search
      *
@@ -45,7 +46,7 @@ class GetController {
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
      * @param Application $app Silex application, number $id
      *
@@ -55,7 +56,7 @@ class GetController {
         if ($id=='') {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
-            return $app->json('Wrong type of parameter: id', 412);
+            return $app->json('Wrong type of parameter: id', 400);
         } else {
             $users = $app['infosContributeur']->getUserActivated($id);
         }
@@ -68,7 +69,7 @@ class GetController {
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
      * @param Application $app Silex application, number $id
      *
@@ -78,7 +79,7 @@ class GetController {
         if ($id=='') {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
-            return $app->json('Wrong type of parameter: id', 412);
+            return $app->json('Only number for: id', 400);
         } else {
             $users = $app['infosContributeur']->getUser($id);
         }
@@ -91,19 +92,26 @@ class GetController {
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
-     * @param Application $app Silex application, number $id
+     * @param number $id
+     * @param Application $app Silex application
+     * @param Request $request Incoming request
      *
      * @return All favourite from an user in JSON format
      */
-    public function getUserFavourite($id, Application $app) {
+    public function getUserFavourite($id, Request $request, Application $app) {
+
+        $token = $request->headers->get('token');
+
         if ($id=='') {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
-            return $app->json('Wrong type of parameter: id', 412);
-        } else {
+            return $app->json('Wrong type of parameter: id', 400);
+        } elseif ( $app['contribution']->contributionTokenOk($token,$id) ) {
             $users = $app['favourite']->getAll($id);
+        } else {
+            return $app->json('Wronk token', 401);
         }
 
         if (count($users) == 0) {
@@ -114,19 +122,24 @@ class GetController {
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
      * @param Application $app Silex application, number $id
      *
      * @return All company favourite from an user in JSON format
      */
-    public function getUserCompanyFavourite($id, Application $app) {
+    public function getUserCompanyFavourite($id, Request $request, Application $app) {
+
+        $token = $request->headers->get('token');
+
         if ($id=='') {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
-            return $app->json('Wrong type of parameter: id', 412);
-        } else {
+            return $app->json('Wrong type of parameter: id', 400);
+        } elseif ( $app['contribution']->contributionTokenOk($token,$id) ) {
             $users = $app['favourite']->getCompanyFavourite($id);
+        } else {
+            return $app->json('Wronk token', 401);
         }
 
         if (count($users) == 0) {
@@ -137,19 +150,24 @@ class GetController {
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
      * @param Application $app Silex application, number $id
      *
      * @return All product favourite from an user in JSON format
      */
-    public function getUserProductFavourite($id, Application $app) {
+    public function getUserProductFavourite($id, Request $request, Application $app) {
+
+        $token = $request->headers->get('token');
+
         if ($id=='') {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
-            return $app->json('Wrong type of parameter: id', 412);
-        } else {
+            return $app->json('Wrong type of parameter: id', 400);
+        } elseif ( $app['contribution']->contributionTokenOk($token,$id) ) {
             $users = $app['favourite']->getProductFavourite($id);
+        } else {
+            return $app->json('Wronk token', 401);
         }
 
         if (count($users) == 0) {
@@ -160,7 +178,7 @@ class GetController {
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
      * @param Application $app Silex application, string $word
      *
@@ -181,15 +199,19 @@ class GetController {
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
-     * @param Application $app Silex application, string $word
+     * @param Application $app Silex application, string $categorie
      *
      * @return All contribution infos_contributeur from an user in JSON format
      */
-    public function getAllContribution(Application $app) {
+    public function getContributionCategorie($categorie, Application $app) {
 
-            $contrib = $app['contribution']->getAll();
+        if ($categorie=='') {
+            return $app->json('Missing required parameter: categorie', 400);
+        } else {
+            $contrib = $app['contribution']->contributionCategorie($categorie);
+        }
 
         if (count($contrib) == 0) {
             return $app->json('No result', 404);
@@ -199,20 +221,24 @@ class GetController {
     }
 
     /**
-     * API articles controller.
+     * Swagger ok
      *
      * @param Application $app Silex application, int $id
      *
      * @return All contribution idée from the current user in JSON format
      */
-    public function getIdeeFromContri($id,Application $app) {
+    public function getIdeeFromContri($id,Request $request, Application $app) {
+
+        $token = $request->headers->get('token');
 
         if ($id=='') {
             return $app->json('Missing required parameter: id', 400);
         } elseif (!is_numeric($id)) {
-            return $app->json('Wrong type of parameter: id', 412);
-        } else {
+            return $app->json('Only number for: id', 400);
+        } elseif ( $app['contribution']->contributionTokenOk($token,$id) ) {
             $contrib = $app['contribution']->ideeFromContri($id);
+        } else {
+            return $app->json('Wronk token', 401);
         }
 
 

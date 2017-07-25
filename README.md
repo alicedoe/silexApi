@@ -1,5 +1,9 @@
 # API php via framework Silex
 
+Centre de formation Beweb Béziers
+---
+Le but de ce projet est de créer une API en php relié à un site déjà existant afin de permettre à une appli android de se connecter
+
 Comment l'installer :
 - Récupérer le projet
 - Insérer une table dans votre base de donnée via le sql dans le repertoire db
@@ -16,4 +20,6 @@ Fonctionnement de l'api :
 - La route est recherché dans app/get.php & post.php chaque route pointe vers un controleur et son action
 - Le controlleur et son action situé dans app/src/Controller sont appelés et appellent la méthode du model 
 - La méthode du model situé dans app/src/Classes est executé et renvois le résultat au controlleur qui génère le json
-- Ils convient de déclarer chaque model que l'on désire utiliser dans app/app.php 
+- Ils convient de déclarer chaque model que l'on désire utiliser dans app/app.php
+
+## Merci
